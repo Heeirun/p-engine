@@ -1,0 +1,8 @@
+fastapi
+pydantic
+uvicorn[standard]
+sentence-transformers
+
+[dev]
+datamodel-code-generator
+ruff

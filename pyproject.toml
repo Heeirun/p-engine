@@ -1,0 +1,34 @@
+[project]
+name = "p-engine"
+version = "0.1.0"
+description = "A p engine"
+requires-python = ">=3.13"
+authors = [
+    { name = "Heeirun", email = "heeirun@gmail.com" }
+]
+dependencies = [
+    "fastapi",
+    "pydantic",
+    "uvicorn[standard]",
+    "sentence-transformers",
+    "elasticsearch",
+]
+
+[project.optional-dependencies]
+dev = [
+    "datamodel-code-generator",
+    "ruff",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff.format]
+quote-style = "double"

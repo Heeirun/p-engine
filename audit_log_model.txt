@@ -1,0 +1,19 @@
+{
+    id:string
+    action:string,
+    description:string,
+    ip_address: string,
+    occured_at: datetime,
+    summary:string,
+    target_entities: array of entities
+    created_at: datetime,
+    actor_id: string,
+    organization_id: string,
+}
+
+Each entity can look like 
+
+{
+    id: string,
+    type: string,
+}

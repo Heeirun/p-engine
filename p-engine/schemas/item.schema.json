@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Item",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The item's name."
+    },
+    "price": {
+      "type": "number",
+      "description": "The item's price."
+    },
+    "is_offer": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "Whether the item is on offer."
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ]
+}

@@ -1,6 +1,7 @@
 """Service for handling search operations."""
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from elasticsearch import Elasticsearch
 
 from ..config import settings
@@ -10,11 +11,7 @@ from .embedding_service import EmbeddingService
 class SearchService:
     """Service for searching audit logs in Elasticsearch."""
 
-    def __init__(
-        self,
-        es_client: Elasticsearch,
-        embedding_service: EmbeddingService
-    ):
+    def __init__(self, es_client: Elasticsearch, embedding_service: EmbeddingService):
         """
         Initialize the search service.
 
@@ -27,9 +24,7 @@ class SearchService:
         self.index_name = settings.elasticsearch_index
 
     def search(
-        self,
-        query: str = "",
-        search_type: str = "keyword"
+        self, query: str = "", search_type: str = "keyword"
     ) -> List[Dict[str, Any]]:
         """
         Search audit logs using the specified search type.
@@ -74,7 +69,7 @@ class SearchService:
                 "query": {
                     "multi_match": {
                         "query": query,
-                        "fields": ["summary", "description"]
+                        "fields": ["summary", "description"],
                     }
                 }
             }
@@ -130,10 +125,7 @@ class SearchService:
 
         es_query = {
             "query": {
-                "multi_match": {
-                    "query": query,
-                    "fields": ["summary", "description"]
-                }
+                "multi_match": {"query": query, "fields": ["summary", "description"]}
             },
             "knn": {
                 "field": "embedding_vector",
@@ -170,8 +162,5 @@ class SearchService:
         Returns:
             List of all audit log documents
         """
-        es_query = {
-            "query": {"match_all": {}},
-            "size": size
-        }
+        es_query = {"query": {"match_all": {}}, "size": size}
         return self._execute_search(es_query)

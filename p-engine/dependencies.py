@@ -1,6 +1,5 @@
 """Shared dependencies and dependency injection for the application."""
 
-from functools import lru_cache
 from elasticsearch import Elasticsearch
 from sentence_transformers import SentenceTransformer
 
@@ -21,8 +20,8 @@ class DependencyContainer:
                 settings.elasticsearch_url,
                 basic_auth=[
                     settings.elasticsearch_user,
-                    settings.elasticsearch_password
-                ]
+                    settings.elasticsearch_password,
+                ],
             )
         return cls._elasticsearch
 
@@ -30,9 +29,7 @@ class DependencyContainer:
     def get_embedding_model(cls) -> SentenceTransformer:
         """Get or create SentenceTransformer model instance."""
         if cls._embedding_model is None:
-            cls._embedding_model = SentenceTransformer(
-                settings.embedding_model_name
-            )
+            cls._embedding_model = SentenceTransformer(settings.embedding_model_name)
         return cls._embedding_model
 
     @classmethod

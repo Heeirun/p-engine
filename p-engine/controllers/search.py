@@ -1,19 +1,20 @@
 """Controller for search and embedding endpoints."""
 
-from typing import List, Dict, Any, Literal
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from typing import Any, Dict, List, Literal
+
 from elasticsearch import Elasticsearch
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sentence_transformers import SentenceTransformer
 
-from ..models import VectorResponse
 from ..dependencies import get_elasticsearch, get_embedding_model
+from ..models import VectorResponse
 from ..services import EmbeddingService, SearchService
 
 router = APIRouter(tags=["search"])
 
 
 def get_embedding_service(
-    model: SentenceTransformer = Depends(get_embedding_model)
+    model: SentenceTransformer = Depends(get_embedding_model),
 ) -> EmbeddingService:
     """
     Get embedding service instance.
@@ -29,7 +30,7 @@ def get_embedding_service(
 
 def get_search_service(
     es_client: Elasticsearch = Depends(get_elasticsearch),
-    embedding_service: EmbeddingService = Depends(get_embedding_service)
+    embedding_service: EmbeddingService = Depends(get_embedding_service),
 ) -> SearchService:
     """
     Get search service instance.
@@ -44,10 +45,12 @@ def get_search_service(
     return SearchService(es_client, embedding_service)
 
 
-@router.get("/get_vector/", response_model=VectorResponse, status_code=status.HTTP_200_OK)
+@router.get(
+    "/get_vector/", response_model=VectorResponse, status_code=status.HTTP_200_OK
+)
 def get_vector(
     text: str = Query(..., min_length=1, description="Text to generate embedding for"),
-    embedding_service: EmbeddingService = Depends(get_embedding_service)
+    embedding_service: EmbeddingService = Depends(get_embedding_service),
 ):
     """
     Generate a 384-dimension vector embedding for the given text.
@@ -66,20 +69,16 @@ def get_vector(
         embedding = embedding_service.generate_embedding(text)
         return VectorResponse(text=text, vector=embedding)
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.get("/search", status_code=status.HTTP_200_OK)
 def search_logs(
     query: str = Query(default="", description="Search query text"),
     search_type: Literal["keyword", "semantic", "hybrid"] = Query(
-        default="keyword",
-        description="Type of search to perform"
+        default="keyword", description="Type of search to perform"
     ),
-    search_service: SearchService = Depends(get_search_service)
+    search_service: SearchService = Depends(get_search_service),
 ) -> List[Dict[str, Any]]:
     """
     Search audit logs in Elasticsearch.
@@ -99,12 +98,9 @@ def search_logs(
         results = search_service.search(query=query, search_type=search_type)
         return results
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Search failed: {str(e)}"
+            detail=f"Search failed: {str(e)}",
         )

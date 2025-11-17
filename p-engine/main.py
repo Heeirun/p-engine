@@ -4,12 +4,13 @@ A production-ready search engine with semantic and hybrid search capabilities.
 """
 
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
-from .dependencies import DependencyContainer
 from .controllers import items_router, search_router
+from .dependencies import DependencyContainer
 
 
 @asynccontextmanager
@@ -32,7 +33,7 @@ app = FastAPI(
     title=settings.app_name,
     description="Search engine with semantic and hybrid search capabilities",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Configure CORS middleware
@@ -57,7 +58,4 @@ def read_root():
     Returns:
         Dictionary with a welcome message
     """
-    return {
-        "message": f"Welcome to {settings.app_name}",
-        "status": "healthy"
-    }
+    return {"message": f"Welcome to {settings.app_name}", "status": "healthy"}

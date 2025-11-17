@@ -1,14 +1,12 @@
 """Controller for item-related endpoints."""
 
 from typing import Optional
+
 from fastapi import APIRouter, status
 
 from ..models import Item
 
-router = APIRouter(
-    prefix="/items",
-    tags=["items"]
-)
+router = APIRouter(prefix="/items", tags=["items"])
 
 
 @router.get("/{item_id}", status_code=status.HTTP_200_OK)
@@ -42,5 +40,5 @@ def update_item(item_id: int, item: Item):
         "item_name": item.name,
         "item_id": item_id,
         "price": item.price,
-        "is_offer": item.is_offer
+        "is_offer": item.is_offer,
     }

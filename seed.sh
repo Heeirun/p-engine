@@ -28,7 +28,7 @@ curl -u $ES_CREDS -X PUT "${ES_HOST}/${INDEX_NAME}" -H 'Content-Type: applicatio
         "type": "nested",
         "properties": {
           "id": { "type": "keyword" },
-          "type": "keyword" }
+          "type": { "type": "keyword" }
         }
       },
       "embedding_vector": {
@@ -42,11 +42,14 @@ curl -u $ES_CREDS -X PUT "${ES_HOST}/${INDEX_NAME}" -H 'Content-Type: applicatio
 
 # 3. Ingest the test data using the Bulk API
 echo "Creating bulk data file..."
-jq -c '.[] | . + {"embedding_text": ("Action: " + .action + ". Details: " + .description)}' test_data.json | while read -r line; do
+jq -c '.[] | . + {"embedding_text": ("Action: " + .action + ". Details: " + .description)} | del(.embedding_vector)' test_data.json | while read -r line; do
     id=$(echo "$line" | jq -r '.id')
     echo "{\"index\": {\"_index\": \"$INDEX_NAME\", \"_id\": \"$id\"}}"
     echo "$line"
 done > bulk_data.json
+
+echo "Generating embeddings for bulk data..."
+uv run python generate_embeddings.py
 
 echo "Ingesting data..."
 curl -u $ES_CREDS -s -X POST "${ES_HOST}/_bulk" -H "Content-Type: application/x-ndjson" --data-binary "@bulk_data.json"

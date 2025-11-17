@@ -1,28 +1,63 @@
+"""P-Engine FastAPI Application.
+
+A production-ready search engine with semantic and hybrid search capabilities.
+"""
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from sentence_transformers import SentenceTransformer
-from .models import Item
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from .config import settings
+from .dependencies import DependencyContainer
+from .controllers import items_router, search_router
 
-# Load the sentence-transformer model
-model = SentenceTransformer('all-MiniLM-L6-v2')
 
-@app.get("/")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Application lifespan handler for startup and shutdown events.
+
+    Initializes shared resources on startup and cleans up on shutdown.
+    """
+    # Startup: Initialize dependencies
+    DependencyContainer.get_elasticsearch()
+    DependencyContainer.get_embedding_model()
+    yield
+    # Shutdown: Clean up resources
+    DependencyContainer.close()
+
+
+# Initialize FastAPI application
+app = FastAPI(
+    title=settings.app_name,
+    description="Search engine with semantic and hybrid search capabilities",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# Configure CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(items_router)
+app.include_router(search_router)
+
+
+@app.get("/", tags=["health"])
 def read_root():
-    return {"Hello": "World"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "q": q}
-
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_id": item_id}
-
-@app.get("/get_vector/")
-def get_vector(text: str):
     """
-    Generates a 384-dimension vector embedding for the given text.
+    Health check endpoint.
+
+    Returns:
+        Dictionary with a welcome message
     """
-    embedding = model.encode(text)
-    return {"text": text, "vector": embedding.tolist()}
+    return {
+        "message": f"Welcome to {settings.app_name}",
+        "status": "healthy"
+    }

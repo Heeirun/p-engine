@@ -1,0 +1,23 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+input[type='text'] {
+  width: 50%;
+  padding: 8px;
+  margin: 10px 0;
+}
+
+button {
+  padding: 8px 15px;
+  cursor: pointer;
+}
+
+div > div {
+  margin-bottom: 10px;
+}
+
+label {
+  margin-right: 10px;
+}

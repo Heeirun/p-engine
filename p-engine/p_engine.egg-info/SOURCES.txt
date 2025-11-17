@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+p-engine/config/__init__.py
+p-engine/config/settings.py
+p-engine/controllers/__init__.py
+p-engine/controllers/items.py
+p-engine/controllers/search.py
+p-engine/models/__init__.py
+p-engine/models/schemas.py
+p-engine/p_engine.egg-info/PKG-INFO
+p-engine/p_engine.egg-info/SOURCES.txt
+p-engine/p_engine.egg-info/dependency_links.txt
+p-engine/p_engine.egg-info/requires.txt
+p-engine/p_engine.egg-info/top_level.txt
+p-engine/services/__init__.py
+p-engine/services/embedding_service.py
+p-engine/services/search_service.py
